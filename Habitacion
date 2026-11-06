@@ -1,0 +1,34 @@
+package hotel;
+public abstract class Habitacion {
+    private int ig_numero;
+    private String sg_tipo;
+    private double dg_precio;
+
+    public Habitacion(int il_numero, String sl_tipo, double dl_precio) {
+        this.ig_numero = il_numero;
+        this.sg_tipo = sl_tipo;
+        this.dg_precio = dl_precio;
+    }
+
+    public int getIg_numero() {
+        return ig_numero;
+    }
+
+    public String getSg_tipo() {
+        return sg_tipo;
+    }
+
+    public double getDg_precio() {
+        return dg_precio;
+    }
+
+    public abstract double calcularCosto(int il_dias);
+
+    public abstract String getDescripcion();
+
+    @Override
+    public String toString() {
+        return "Habitación " + ig_numero + " | " + sg_tipo + " | " + getDescripcion()
+                + " | Precio por día: $" + String.format("%.2f", dg_precio);
+    }
+}
