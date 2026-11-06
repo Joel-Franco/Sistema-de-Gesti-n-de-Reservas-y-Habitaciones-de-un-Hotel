@@ -1,0 +1,65 @@
+package hotel;
+public class Reserva implements Ipago {
+    private Cliente cliente;
+    private Habitacion habitacion;
+    private int ig_diaEntrada;
+    private int ig_diaSalida;
+    private double dg_costo;
+    private String sg_estado;
+
+    public Reserva(Cliente cliente, Habitacion habitacion, int il_diaEntrada, int il_diaSalida) {
+        this.cliente = cliente;
+        this.habitacion = habitacion;
+        this.ig_diaEntrada = il_diaEntrada;
+        this.ig_diaSalida = il_diaSalida;
+        this.sg_estado = "Activa";
+        this.dg_costo = calcularCosto();
+    }
+
+    public int getDias() {
+        return ig_diaSalida - ig_diaEntrada + 1;
+    }
+
+    @Override
+    public double calcularCosto() {
+        return habitacion.calcularCosto(getDias());
+    }
+
+    @Override
+    public double calcularPenalizacion() {
+        return 0.30 * dg_costo;
+    }
+
+    public void cancelar() {
+        sg_estado = "Cancelada";
+    }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public Habitacion getHabitacion() {
+        return habitacion;
+    }
+
+    public int getIg_diaEntrada() {
+        return ig_diaEntrada;
+    }
+
+    public int getIg_diaSalida() {
+        return ig_diaSalida;
+    }
+
+    public String getSg_estado() {
+        return sg_estado;
+    }
+
+    @Override
+    public String toString() {
+        return "Cliente: " + cliente.getSg_nombre() + " (" + cliente.getSg_identificacion() + ")"
+                + " | Habitación " + habitacion.getIg_numero() + " (" + habitacion.getSg_tipo() + ")"
+                + " | Días " + ig_diaEntrada + " al " + ig_diaSalida + " (" + getDias() + ")"
+                + " | Costo: $" + String.format("%.2f", dg_costo)
+                + " | Estado: " + sg_estado;
+    }
+}
