@@ -1,0 +1,36 @@
+package hotel;
+public class Cliente {
+    private String sg_nombre;
+    private String sg_identificacion;
+
+    public Cliente(String sl_nombre, String sl_identificacion) {
+        this.sg_nombre = sl_nombre;
+        this.sg_identificacion = sl_identificacion;
+    }
+
+    public String getSg_nombre() {
+        return sg_nombre;
+    }
+
+    public String getSg_identificacion() {
+        return sg_identificacion;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        Cliente cl_otro = (Cliente) obj;
+        return sg_identificacion.equals(cl_otro.sg_identificacion);
+    }
+
+    @Override
+    public String toString() {
+        return "Cliente: " + sg_nombre + " | Identificación: " + sg_identificacion;
+    }
+}
+
