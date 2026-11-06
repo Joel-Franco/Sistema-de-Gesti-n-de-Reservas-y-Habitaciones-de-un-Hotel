@@ -1,0 +1,123 @@
+package hotel;
+import java.util.Scanner;
+
+public class Main {
+    private static Scanner sg_teclado = new Scanner(System.in);
+    private static GestorHotel gestor = new GestorHotel();
+
+    public static void main(String[] args) {
+        int il_opcion;
+        do {
+            System.out.println("\n===== MENÚ PRINCIPAL =====");
+            System.out.println("1. Registrar cliente");
+            System.out.println("2. Registrar reserva");
+            System.out.println("3. Cancelar reserva");
+            System.out.println("4. Consultas y reportes");
+            System.out.println("5. Salir");
+            il_opcion = leerEntero("Opción: ", 1, 5);
+
+            if (il_opcion == 1) {
+                registrarCliente();
+            } else if (il_opcion == 2) {
+                registrarReserva();
+            } else if (il_opcion == 3) {
+                int il_hab = leerEntero("Número de habitación: ", 1, 999);
+                int il_entrada = leerEntero("Día de entrada de la reserva (1-100): ", 1, 100);
+                gestor.cancelarReserva(il_hab, il_entrada);
+            } else if (il_opcion == 4) {
+                menuConsultas();
+            }
+        } while (il_opcion != 5);
+        System.out.println("Hasta luego.");
+    }
+
+    private static void registrarCliente() {
+        String sl_nombre = leerTexto("Nombre: ");
+        String sl_id = leerTexto("Identificación: ");
+        if (gestor.registrarCliente(new Cliente(sl_nombre, sl_id))) {
+            System.out.println("Cliente registrado correctamente.");
+        } else {
+            System.out.println("Error: ya existe un cliente con esa identificación.");
+        }
+    }
+
+    private static void registrarReserva() {
+        String sl_id = leerTexto("Identificación del cliente: ");
+        Cliente cl_cliente = gestor.buscarCliente(sl_id);
+        if (cl_cliente == null) {
+            System.out.println("Error: el cliente no está registrado.");
+            return;
+        }
+        System.out.println("Tipo de habitación: 1. Simple  2. Doble  3. Suite");
+        int il_tipo = leerEntero("Tipo: ", 1, 3);
+        int il_entrada = leerEntero("Día de entrada (1-100): ", 1, 100);
+        int il_salida = leerEntero("Día de salida (1-100): ", 1, 100);
+        while (il_salida < il_entrada) {
+            System.out.println("Error: el día de salida no puede ser anterior al de entrada.");
+            il_salida = leerEntero("Día de salida (1-100): ", 1, 100);
+        }
+        Reserva r = gestor.registrarReserva(cl_cliente, il_tipo, il_entrada, il_salida);
+        if (r == null) {
+            System.out.println("Error: no hay habitación disponible de ese tipo en esas fechas.");
+        } else {
+            System.out.println("Reserva registrada:");
+            System.out.println(r);
+        }
+    }
+
+    private static void menuConsultas() {
+        int il_opcion;
+        do {
+            System.out.println("\n--- CONSULTAS Y REPORTES ---");
+            System.out.println("1. Mostrar habitaciones");
+            System.out.println("2. Mostrar reservas");
+            System.out.println("3. Mostrar reservas de un cliente");
+            System.out.println("4. Mostrar clientes");
+            System.out.println("5. Volver al menú principal");
+            il_opcion = leerEntero("Opción: ", 1, 5);
+
+            if (il_opcion == 1) {
+                gestor.mostrarHabitaciones();
+            } else if (il_opcion == 2) {
+                gestor.mostrarReservas();
+            } else if (il_opcion == 3) {
+                String sl_id = leerTexto("Identificación del cliente: ");
+                Cliente cl_cliente = gestor.buscarCliente(sl_id);
+                if (cl_cliente == null) {
+                    System.out.println("Error: el cliente no está registrado.");
+                } else {
+                    gestor.mostrarReservas(cl_cliente);
+                }
+            } else if (il_opcion == 4) {
+                gestor.mostrarClientes();
+            }
+        } while (il_opcion != 5);
+    }
+
+    private static int leerEntero(String sl_mensaje, int il_min, int il_max) {
+        while (true) {
+            System.out.print(sl_mensaje);
+            String sl_texto = sg_teclado.nextLine().trim();
+            if (!sl_texto.matches("\\d{1,9}")) {
+                System.out.println("Error: ingrese un número válido.");
+            } else {
+                int il_valor = Integer.parseInt(sl_texto);
+                if (il_valor >= il_min && il_valor <= il_max) {
+                    return il_valor;
+                }
+                System.out.println("Error: el valor debe estar entre " + il_min + " y " + il_max + ".");
+            }
+        }
+    }
+    private static String leerTexto(String sl_mensaje) {
+        while (true) {
+            System.out.print(sl_mensaje);
+            String sl_texto = sg_teclado.nextLine().trim();
+            if (!sl_texto.isEmpty()) {
+                return sl_texto;
+            }
+            System.out.println("Error: el campo no puede estar vacío.");
+        }
+    }
+}
+
