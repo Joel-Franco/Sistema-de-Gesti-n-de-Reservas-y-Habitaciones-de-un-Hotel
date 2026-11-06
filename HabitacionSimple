@@ -1,0 +1,17 @@
+package hotel;
+public class HabitacionSimple extends Habitacion {
+
+    public HabitacionSimple(int il_numero) {
+        super(il_numero, "Simple", 50.0);
+    }
+
+    @Override
+    public double calcularCosto(int il_dias) {
+        return il_dias * getDg_precio();
+    }
+
+    @Override
+    public String getDescripcion() {
+        return "1 cama individual";
+    }
+}
