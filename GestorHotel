@@ -1,0 +1,133 @@
+package hotel;
+import java.util.ArrayList;
+
+public class GestorHotel {
+    private ArrayList<Habitacion> habitaciones = new ArrayList<>();
+    private ArrayList<Cliente> clientes = new ArrayList<>();
+    private ArrayList<Reserva> reservas = new ArrayList<>();
+
+    public GestorHotel() {
+        habitaciones.add(new HabitacionSimple(101));
+        habitaciones.add(new HabitacionSimple(102));
+        habitaciones.add(new HabitacionDoble(201));
+        habitaciones.add(new HabitacionDoble(202));
+        habitaciones.add(new Suite(301));
+    }
+
+    public boolean registrarCliente(Cliente cliente) {
+        if (cliente.getSg_nombre().isEmpty() || cliente.getSg_identificacion().isEmpty()) {
+            return false;
+        }
+        if (clientes.contains(cliente)) {
+            return false;
+        }
+        clientes.add(cliente);
+        return true;
+    }
+
+    public Cliente buscarCliente(String sl_identificacion) {
+        for (Cliente c : clientes) {
+            if (c.getSg_identificacion().equals(sl_identificacion)) {
+                return c;
+            }
+        }
+        return null;
+    }
+
+    public Reserva registrarReserva(Cliente cliente, int il_tipo, int il_entrada, int il_salida) {
+        if (cliente == null || !clientes.contains(cliente)) {
+            return null;
+        }
+        String sl_tipo = "";
+        if (il_tipo == 1) {
+            sl_tipo = "Simple";
+        } else if (il_tipo == 2) {
+            sl_tipo = "Doble";
+        } else if (il_tipo == 3) {
+            sl_tipo = "Suite";
+        }
+        for (Habitacion h : habitaciones) {
+            if (h.getSg_tipo().equals(sl_tipo) && estaLibre(h, il_entrada, il_salida)) {
+                Reserva r = new Reserva(cliente, h, il_entrada, il_salida);
+                reservas.add(r);
+                return r;
+            }
+        }
+        return null; 
+    }
+
+    private boolean estaLibre(Habitacion hab, int il_entrada, int il_salida) {
+        for (Reserva r : reservas) {
+            if (r.getHabitacion() == hab && r.getSg_estado().equals("Activa")
+                    && il_entrada <= r.getIg_diaSalida() && r.getIg_diaEntrada() <= il_salida) {
+                return false;
+            }
+        }
+        return true;
+    }
+    public void cancelarReserva(int il_numeroHabitacion, int il_diaEntrada) {
+        Reserva encontrada = null;
+        boolean bl_yaCancelada = false;
+        for (Reserva r : reservas) {
+            if (r.getHabitacion().getIg_numero() == il_numeroHabitacion
+                    && r.getIg_diaEntrada() == il_diaEntrada) {
+                if (r.getSg_estado().equals("Activa")) { // RN-04
+                    encontrada = r;
+                    break;
+                } else {
+                    bl_yaCancelada = true;
+                }
+            }
+        }
+        if (encontrada != null) {
+            encontrada.cancelar();
+            System.out.println("Reserva cancelada. Penalización: $"
+                    + String.format("%.2f", encontrada.calcularPenalizacion()));
+        } else if (bl_yaCancelada) {
+            System.out.println("Error: la reserva ya estaba cancelada.");
+        } else {
+            System.out.println("Error: no existe una reserva con esos datos.");
+        }
+    }
+
+    public void mostrarHabitaciones() {
+        System.out.println("--- HABITACIONES ---");
+        for (Habitacion h : habitaciones) {
+            System.out.println(h);
+        }
+    }
+
+    public void mostrarReservas() {
+        System.out.println("--- RESERVAS ---");
+        if (reservas.isEmpty()) {
+            System.out.println("No hay reservas registradas.");
+        }
+        for (Reserva r : reservas) {
+            System.out.println(r);
+        }
+    }
+
+    public void mostrarReservas(Cliente cliente) {
+        System.out.println("--- RESERVAS DE " + cliente.getSg_nombre() + " ---");
+        boolean bl_hay = false;
+        for (Reserva r : reservas) {
+            if (r.getCliente().equals(cliente)) {
+                System.out.println(r);
+                bl_hay = true;
+            }
+        }
+        if (!bl_hay) {
+            System.out.println("El cliente no tiene reservas.");
+        }
+    }
+
+    public void mostrarClientes() {
+        System.out.println("--- CLIENTES ---");
+        if (clientes.isEmpty()) {
+            System.out.println("No hay clientes registrados.");
+        }
+        for (Cliente c : clientes) {
+            System.out.println(c);
+        }
+    }
+}
